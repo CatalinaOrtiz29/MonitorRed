@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Monitor Red Hospital Militar</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#f2f2f2;
+            margin:40px;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            margin-bottom:20px;
+            box-shadow:0 0 10px gray;
+        }
+
+        .ok{
+            color:green;
+        }
+
+        .caido{
+            color:red;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Monitor Red Hospital Militar</h1>
+
+<div id="contenido"></div>
+
+<script>
+
+fetch("datos.json")
+.then(response => response.json())
+.then(data => {
+
+    let html = "";
+
+    data.sitios.forEach(sitio => {
+
+        let clase = "ok";
+
+        if(sitio.estado == "CAIDO"){
+            clase = "caido";
+        }
+
+        html += `
+        <div class="card">
+
+            <h2>${sitio.nombre}</h2>
+
+            <p class="${clase}">
+                Estado: ${sitio.estado}
+            </p>
+
+            <p>
+                Latencia promedio: ${sitio.promedio} ms
+            </p>
+
+            <p>
+                Máximo: ${sitio.maximo} ms
+            </p>
+
+            <p>
+                IP: ${sitio.ip}
+            </p>
+
+        </div>
+        `;
+    });
+
+    document.getElementById("contenido").innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>
