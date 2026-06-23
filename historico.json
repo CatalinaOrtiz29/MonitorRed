@@ -3742,5 +3742,23 @@
         "minimo": 3,
         "perdida": 5,
         "estado": "OK"
+    },
+    {
+        "fecha": "23/06 10:00",
+        "sitio": "webpad-neb-homil.mitrol.cloud",
+        "promedio": 14,
+        "maximo": 33,
+        "minimo": 3,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "23/06 10:00",
+        "sitio": "dghweb.homil.gov.co",
+        "promedio": 14,
+        "maximo": 40,
+        "minimo": 4,
+        "perdida": 0,
+        "estado": "OK"
     }
 ]
