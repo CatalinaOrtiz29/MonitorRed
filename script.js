@@ -57,7 +57,7 @@ function calcularDisponibilidad(historico) {
     return resultado;
 }
 
-function renderizarResumen(sitios, disponibilidad) {
+function renderizarResumen(sitios, disponibilidad, demoraMin) {
     const el = $('resumen');
     if (!el) return;
     const total = sitios.length;
@@ -74,6 +74,7 @@ function renderizarResumen(sitios, disponibilidad) {
     const picoDelDia = sitios.length > 0
         ? Math.max(...sitios.map(s => s.maximo))
         : 0;
+    const demoraClase = demoraMin === null ? '' : demoraMin < 5 ? 'green' : demoraMin < 10 ? 'yellow' : 'red';
 
     el.innerHTML = `
         <span class="summary-stat">
@@ -104,6 +105,11 @@ function renderizarResumen(sitios, disponibilidad) {
         <span class="summary-stat">
             <span class="num">${picoDelDia}</span>
             <span class="label">ms pico</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num ${demoraClase}">${demoraMin ?? '—'}</span>
+            <span class="label">min demora</span>
         </span>
     `;
 }
@@ -176,6 +182,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                 <span>🖥 ${s.ip || s.nombre}</span>
                 <span>📡 TTL: ${ttl}</span>
                 <span>📊 ${dataHistorico.length} mediciones</span>
+                <span>🕐 ${dataHistorico.length > 0 ? dataHistorico[dataHistorico.length - 1].fecha : 'N/A'}</span>
             </div>
         `;
         container.appendChild(card);
@@ -385,7 +392,16 @@ async function cargarDatos() {
         const disponibilidad = calcularDisponibilidad(historico);
 
         actualizarSaludGeneral(datos.sitios);
-        renderizarResumen(datos.sitios, disponibilidad);
+        const ahora = new Date();
+        const ultimaFechaStr = historico.length > 0
+            ? historico.map(h => h.fecha).sort().pop()
+            : null;
+        let demoraMin = null;
+        if (ultimaFechaStr) {
+            const ultimaFecha = parseFechaEvento(ultimaFechaStr);
+            demoraMin = Math.round((ahora - ultimaFecha) / 60000);
+        }
+        renderizarResumen(datos.sitios, disponibilidad, demoraMin);
         crearTarjetas(datos.sitios, historico, disponibilidad);
         const eventos = calcularEventos(historico);
         renderizarEventos(eventos);
