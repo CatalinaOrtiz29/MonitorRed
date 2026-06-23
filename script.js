@@ -280,6 +280,92 @@ function crearTarjetas(sitios, historico, disponibilidad) {
     });
 }
 
+function parseFechaEvento(str) {
+    const [fecha, hora] = str.split(' ');
+    const [d, m] = fecha.split('/');
+    const [hh, mm] = hora.split(':');
+    return new Date(2026, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
+}
+
+function calcularEventos(historico) {
+    const eventos = [];
+    const sitiosUnicos = [...new Set(historico.map(h => h.sitio))];
+
+    for (const sitio of sitiosUnicos) {
+        const datos = historico
+            .filter(h => h.sitio === sitio)
+            .sort((a, b) => parseFechaEvento(a.fecha) - parseFechaEvento(b.fecha));
+
+        const friendly = NOMBRES[sitio] || sitio;
+        let estadoAnterior = null;
+        let enPico = false;
+        let enPerdida = false;
+
+        for (const d of datos) {
+            if (estadoAnterior !== null && d.estado !== estadoAnterior) {
+                eventos.push({
+                    tiempo: d.fecha,
+                    sitio: friendly,
+                    tipo: d.estado === 'CAIDO' ? 'caida' : 'recuperacion',
+                    mensaje: d.estado === 'CAIDO' ? 'Caída de servicio' : 'Servicio recuperado'
+                });
+            }
+            estadoAnterior = d.estado;
+
+            if (d.maximo > 100 && !enPico) {
+                eventos.push({
+                    tiempo: d.fecha, sitio: friendly,
+                    tipo: 'pico',
+                    mensaje: `Pico de latencia (${d.maximo}ms)`
+                });
+                enPico = true;
+            } else if (d.maximo <= 100) {
+                enPico = false;
+            }
+
+            const perdida = d.perdida ?? 0;
+            if (perdida > 5 && !enPerdida) {
+                eventos.push({
+                    tiempo: d.fecha, sitio: friendly,
+                    tipo: 'perdida',
+                    mensaje: `Pérdida de paquetes (${perdida}%)`
+                });
+                enPerdida = true;
+            } else if (perdida <= 5) {
+                enPerdida = false;
+            }
+        }
+    }
+
+    eventos.sort((a, b) => parseFechaEvento(b.tiempo) - parseFechaEvento(a.tiempo));
+    return eventos.slice(0, 20);
+}
+
+function renderizarEventos(eventos) {
+    const el = $('eventos');
+    if (!el) return;
+    if (eventos.length === 0) {
+        el.innerHTML = '<div class="events-empty">Sin eventos registrados en las últimas 24h</div>';
+        return;
+    }
+
+    const ICONOS = {
+        caida: '🔴',
+        recuperacion: '🟢',
+        pico: '🟡',
+        perdida: '⚠️'
+    };
+
+    el.innerHTML = eventos.map(e => `
+        <div class="event-row event-${e.tipo}">
+            <span class="event-icon">${ICONOS[e.tipo] || '•'}</span>
+            <span class="event-time">${e.tiempo}</span>
+            <span class="event-site">${e.sitio}</span>
+            <span class="event-msg">${e.mensaje}</span>
+        </div>
+    `).join('');
+}
+
 async function cargarDatos() {
     const loadingEl = $('loading');
     const cardsEl = $('cards');
@@ -301,6 +387,8 @@ async function cargarDatos() {
         actualizarSaludGeneral(datos.sitios);
         renderizarResumen(datos.sitios, disponibilidad);
         crearTarjetas(datos.sitios, historico, disponibilidad);
+        const eventos = calcularEventos(historico);
+        renderizarEventos(eventos);
 
         const ultAct = $('ultima-actualizacion');
         if (ultAct) {
