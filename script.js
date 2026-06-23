@@ -67,6 +67,12 @@ function renderizarResumen(sitios, disponibilidad) {
         : 100;
     const caidosClase = caidos > 0 ? 'red' : 'green';
     const dispClase = dispTotal >= 99 ? 'green' : dispTotal >= 95 ? 'yellow' : 'red';
+    const latenciaGeneral = sitios.length > 0
+        ? Math.round(sitios.reduce((a, s) => a + s.promedio, 0) / sitios.length)
+        : 0;
+    const picoDelDia = sitios.length > 0
+        ? Math.max(...sitios.map(s => s.maximo))
+        : 0;
 
     el.innerHTML = `
         <span class="summary-stat">
@@ -87,6 +93,16 @@ function renderizarResumen(sitios, disponibilidad) {
         <span class="summary-stat">
             <span class="num ${dispClase}">${dispTotal}%</span>
             <span class="label">disponibilidad</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num">${latenciaGeneral}</span>
+            <span class="label">ms latencia</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num">${picoDelDia}</span>
+            <span class="label">ms pico</span>
         </span>
     `;
 }
@@ -140,8 +156,8 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                     <span class="label">Promedio</span>
                 </div>
                 <div class="stat">
-                    <div class="value">${s.maximo} <span style="font-size:12px;font-weight:400">ms</span></div>
-                    <span class="label">Máximo</span>
+                    <div class="value">${s.minimo ?? s.promedio} <span style="font-size:10px;font-weight:400">/</span> ${s.maximo} <span style="font-size:12px;font-weight:400">ms</span></div>
+                    <span class="label">Mín / Máx</span>
                 </div>
                 <div class="stat">
                     <div class="value ${perdida > 0 ? 'red' : 'green'}">${perdida}<span style="font-size:12px;font-weight:400">%</span></div>
@@ -171,28 +187,78 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                 if (charts[chartId]) charts[chartId].destroy();
 
                 const promedios = dataHistorico.map(d => d.promedio);
-                const maxProm = Math.max(...promedios, 1);
+                const maximos = dataHistorico.map(d => d.maximo);
+                const minimos = dataHistorico.map(d => d.minimo ?? d.promedio);
+                const todosValores = [...promedios, ...maximos, ...minimos];
+                const maxEscala = Math.max(...todosValores, 1);
 
                 charts[chartId] = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: dataHistorico.map(d => d.fecha),
-                        datasets: [{
-                            data: promedios,
-                            borderColor: getColor(nivel),
-                            backgroundColor: getColor(nivel) + '18',
-                            fill: true,
-                            tension: 0.3,
-                            pointRadius: 1.5,
-                            pointHoverRadius: 4,
-                            pointBackgroundColor: getColor(nivel),
-                            borderWidth: 2
-                        }]
+                        datasets: [
+                            {
+                                data: maximos,
+                                borderColor: getColor(nivel) + '50',
+                                borderDash: [3, 3],
+                                borderWidth: 1,
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                fill: false,
+                                tooltip: { hidden: true }
+                            },
+                            {
+                                data: minimos,
+                                borderColor: getColor(nivel) + '50',
+                                borderDash: [3, 3],
+                                borderWidth: 1,
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                backgroundColor: getColor(nivel) + '12',
+                                fill: '-1',
+                                tooltip: { hidden: true }
+                            },
+                            {
+                                data: promedios,
+                                borderColor: getColor(nivel),
+                                backgroundColor: getColor(nivel) + '18',
+                                fill: false,
+                                tension: 0.3,
+                                pointRadius: 1.5,
+                                pointHoverRadius: 5,
+                                pointBackgroundColor: getColor(nivel),
+                                borderWidth: 2
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const idx = context.dataIndex;
+                                        const d = dataHistorico[idx];
+                                        if (!d) return '';
+                                        if (d.estado === 'CAIDO') return 'CAÍDO';
+                                        const partes = [
+                                            `Prom: ${d.promedio}ms`,
+                                            `Mín: ${d.minimo || d.promedio}ms`,
+                                            `Máx: ${d.maximo}ms`
+                                        ];
+                                        if (d.perdida && d.perdida > 0) {
+                                            partes.push(`Pérdida: ${d.perdida}%`);
+                                        }
+                                        return partes.join('  ·  ');
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             x: {
                                 ticks: { color: '#8b949e', maxTicksLimit: 8, font: { size: 9 } },
@@ -200,7 +266,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                             },
                             y: {
                                 min: 0,
-                                max: Math.max(maxProm * 1.3, 10),
+                                max: Math.max(maxEscala * 1.3, 10),
                                 ticks: { color: '#8b949e', font: { size: 9 }, callback: v => v + 'ms' },
                                 grid: { color: 'rgba(48,54,61,0.3)' }
                             }
