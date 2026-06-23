@@ -173,7 +173,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                 <canvas id="${chartId}"></canvas>
             </div>
             <div class="card-footer">
-                <span>🖥 ${s.ip}</span>
+                <span>🖥 ${s.ip || s.nombre}</span>
                 <span>📡 TTL: ${ttl}</span>
                 <span>📊 ${dataHistorico.length} mediciones</span>
             </div>
@@ -191,7 +191,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                 const maximos = dataHistorico.map(d => d.maximo);
                 const minimos = dataHistorico.map(d => d.minimo ?? d.promedio);
                 const todosValores = [...promedios, ...maximos, ...minimos];
-                const maxEscala = Math.max(...todosValores, 1);
+                const maxEscala = Math.ceil(Math.max(...todosValores, 1));
 
                 charts[chartId] = new Chart(ctx, {
                     type: 'line',
@@ -268,7 +268,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                             y: {
                                 min: 0,
                                 max: Math.max(maxEscala * 1.3, 10),
-                                ticks: { color: '#8b949e', font: { size: 9 }, callback: v => v + 'ms' },
+                                ticks: { color: '#8b949e', font: { size: 9 }, callback: v => Math.round(v) + 'ms' },
                                 grid: { color: 'rgba(48,54,61,0.3)' }
                             }
                         },
