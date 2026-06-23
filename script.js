@@ -1,3 +1,9 @@
+function $(id) {
+    const el = document.getElementById(id);
+    if (!el) console.warn('Elemento no encontrado:', id);
+    return el;
+}
+
 const NOMBRES = {
     "webpad-neb-homil.mitrol.cloud": "Mitrol",
     "dghweb.homil.gov.co": "DGHWEB"
@@ -25,7 +31,8 @@ function getColor(nivel) {
 }
 
 function actualizarSaludGeneral(sitios) {
-    const el = document.getElementById('salud-general');
+    const el = $('salud-general');
+    if (!el) return;
     let nivel = 'green';
     for (const s of sitios) {
         const n = getNivel(s.promedio, s.perdida ?? 0, s.estado);
@@ -50,7 +57,8 @@ function calcularDisponibilidad(historico) {
 }
 
 function renderizarResumen(sitios, disponibilidad) {
-    const el = document.getElementById('resumen');
+    const el = $('resumen');
+    if (!el) return;
     const total = sitios.length;
     const ok = sitios.filter(s => s.estado === 'OK').length;
     const caidos = total - ok;
@@ -63,7 +71,7 @@ function renderizarResumen(sitios, disponibilidad) {
     el.innerHTML = `
         <span class="summary-stat">
             <span class="num">${total}</span>
-            <span class="label">sitios monitoreados</span>
+            <span class="label">sitios</span>
         </span>
         <span class="summary-divider"></span>
         <span class="summary-stat">
@@ -102,7 +110,8 @@ function crearAnilloDisponibilidad(porcentaje, nivel) {
 }
 
 function crearTarjetas(sitios, historico, disponibilidad) {
-    const container = document.getElementById('cards');
+    const container = $('cards');
+    if (!container) return;
     container.innerHTML = '';
 
     sitios.forEach((s, idx) => {
@@ -156,7 +165,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
 
         if (dataHistorico.length > 0) {
             setTimeout(() => {
-                const canvas = document.getElementById(chartId);
+                const canvas = $(chartId);
                 if (!canvas) return;
                 const ctx = canvas.getContext('2d');
                 if (charts[chartId]) charts[chartId].destroy();
@@ -205,7 +214,14 @@ function crearTarjetas(sitios, historico, disponibilidad) {
 }
 
 async function cargarDatos() {
-    document.getElementById('loading').classList.remove('hidden');
+    const loadingEl = $('loading');
+    const cardsEl = $('cards');
+    if (!cardsEl) {
+        console.error('Falta el elemento #cards en el HTML');
+        return;
+    }
+    if (loadingEl) loadingEl.classList.remove('hidden');
+
     try {
         const [datosRes, historicoRes] = await Promise.all([
             fetch('datos.json?' + Date.now()),
@@ -219,13 +235,21 @@ async function cargarDatos() {
         renderizarResumen(datos.sitios, disponibilidad);
         crearTarjetas(datos.sitios, historico, disponibilidad);
 
-        document.getElementById('ultima-actualizacion').textContent =
-            new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const ultAct = $('ultima-actualizacion');
+        if (ultAct) {
+            ultAct.textContent =
+                new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
     } catch (err) {
-        document.getElementById('cards').innerHTML =
-            '<div class="card border-red" style="padding:30px;text-align:center;color:var(--red)">Error al cargar datos: ' + err.message + '</div>';
+        console.error('Error al cargar datos:', err);
+        cardsEl.innerHTML = `
+            <div class="card border-red" style="padding:40px;text-align:center">
+                <p style="color:var(--red);font-size:16px;font-weight:600">⚠ Error al cargar datos</p>
+                <p style="color:var(--text-muted);margin-top:8px;font-size:13px">${err.message}</p>
+                <p style="color:var(--text-muted);margin-top:12px;font-size:12px">Reintentando en 60s...</p>
+            </div>`;
     } finally {
-        document.getElementById('loading').classList.add('hidden');
+        if (loadingEl) loadingEl.classList.add('hidden');
     }
 }
 
