@@ -6,7 +6,8 @@ function $(id) {
 
 const NOMBRES = {
     "webpad-neb-homil.mitrol.cloud": "Mitrol",
-    "dghweb.homil.gov.co": "DGHWEB"
+    "dghweb.homil.gov.co": "DGHWEB",
+    "10.200.192.1": "Puerta de Enlace"
 };
 
 const UMBRALES = {
