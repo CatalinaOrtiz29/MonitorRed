@@ -5,23 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Red Hospital Militar</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
 </head>
 <body>
     <header>
         <div class="header-left">
             <div class="logo">⬡</div>
             <h1>Monitor de Red</h1>
+            <span class="badge">HOSPITAL MILITAR</span>
         </div>
         <div class="header-right">
-            <span class="label">Salud General</span>
-            <span id="salud-general" class="salud-indicador">●</span>
-            <span id="ultima-actualizacion" class="ult-act"></span>
+            <div class="health-indicator">
+                <span class="label">Salud</span>
+                <span id="salud-general" class="salud-dot">●</span>
+            </div>
+            <div class="last-update">
+                <span class="label">Actualizado</span>
+                <span id="ultima-actualizacion">--:--:--</span>
+            </div>
         </div>
     </header>
 
+    <div id="resumen" class="summary-bar"></div>
+
     <main>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <span>Cargando datos...</span>
+        </div>
         <div id="cards" class="cards-container"></div>
-        <div id="graficas" class="charts-container"></div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>

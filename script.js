@@ -1,7 +1,11 @@
+const NOMBRES = {
+    "webpad-neb-homil.mitrol.cloud": "Mitrol",
+    "dghweb.homil.gov.co": "DGHWEB"
+};
+
 const UMBRALES = {
     latenciaVerde: 30,
     latenciaAmarilla: 100,
-    perdidaAmarilla: 5,
 };
 
 let charts = {};
@@ -15,6 +19,11 @@ function getNivel(promedio, perdida, estado) {
     return 'green';
 }
 
+function getColor(nivel) {
+    const map = { green: '#2ea043', yellow: '#d29922', red: '#da3633' };
+    return map[nivel] || '#8b949e';
+}
+
 function actualizarSaludGeneral(sitios) {
     const el = document.getElementById('salud-general');
     let nivel = 'green';
@@ -23,125 +32,200 @@ function actualizarSaludGeneral(sitios) {
         if (n === 'red') { nivel = 'red'; break; }
         if (n === 'yellow') nivel = 'yellow';
     }
-    el.className = 'salud-indicador ' + nivel;
+    el.className = 'salud-dot ' + nivel;
 }
 
-function crearTarjetas(sitios) {
+function calcularDisponibilidad(historico) {
+    const porSitio = {};
+    historico.forEach(h => {
+        if (!porSitio[h.sitio]) porSitio[h.sitio] = { total: 0, ok: 0 };
+        porSitio[h.sitio].total++;
+        if (h.estado === 'OK') porSitio[h.sitio].ok++;
+    });
+    const resultado = {};
+    for (const [sitio, datos] of Object.entries(porSitio)) {
+        resultado[sitio] = datos.total > 0 ? Math.round((datos.ok / datos.total) * 100) : 100;
+    }
+    return resultado;
+}
+
+function renderizarResumen(sitios, disponibilidad) {
+    const el = document.getElementById('resumen');
+    const total = sitios.length;
+    const ok = sitios.filter(s => s.estado === 'OK').length;
+    const caidos = total - ok;
+    const dispTotal = Object.values(disponibilidad).length > 0
+        ? Math.round(Object.values(disponibilidad).reduce((a, b) => a + b, 0) / Object.values(disponibilidad).length)
+        : 100;
+    const caidosClase = caidos > 0 ? 'red' : 'green';
+    const dispClase = dispTotal >= 99 ? 'green' : dispTotal >= 95 ? 'yellow' : 'red';
+
+    el.innerHTML = `
+        <span class="summary-stat">
+            <span class="num">${total}</span>
+            <span class="label">sitios monitoreados</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num green">${ok}</span>
+            <span class="label">OK</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num ${caidosClase}">${caidos}</span>
+            <span class="label">caídos</span>
+        </span>
+        <span class="summary-divider"></span>
+        <span class="summary-stat">
+            <span class="num ${dispClase}">${dispTotal}%</span>
+            <span class="label">disponibilidad</span>
+        </span>
+    `;
+}
+
+function crearAnilloDisponibilidad(porcentaje, nivel) {
+    const radio = 17;
+    const circunferencia = 2 * Math.PI * radio;
+    const offset = circunferencia - (porcentaje / 100) * circunferencia;
+    const color = getColor(nivel);
+    return `
+    <div class="avail-ring">
+        <svg viewBox="0 0 40 40">
+            <circle class="ring-bg" cx="20" cy="20" r="${radio}"/>
+            <circle class="ring-fg" cx="20" cy="20" r="${radio}"
+                stroke="${color}"
+                stroke-dasharray="${circunferencia}"
+                stroke-dashoffset="${offset}"/>
+        </svg>
+        <span class="ring-text" style="color:${color}">${porcentaje}%</span>
+    </div>`;
+}
+
+function crearTarjetas(sitios, historico, disponibilidad) {
     const container = document.getElementById('cards');
     container.innerHTML = '';
 
-    sitios.forEach(s => {
+    sitios.forEach((s, idx) => {
         const nivel = getNivel(s.promedio, s.perdida ?? 0, s.estado);
         const perdida = s.perdida ?? 0;
         const ttl = s.ttl ?? 'N/A';
+        const friendly = NOMBRES[s.nombre] || s.nombre;
+        const disp = disponibilidad[s.nombre] ?? 100;
+        const chartId = 'chart-' + idx;
+        const dataHistorico = historico.filter(h => h.sitio === s.nombre);
+
         const card = document.createElement('div');
         card.className = 'card border-' + nivel;
+        card.style.animationDelay = (idx * 0.1) + 's';
         card.innerHTML = `
             <div class="card-header">
-                <h2>${s.nombre}</h2>
+                <div class="card-title-group">
+                    <span class="friendly-name">${friendly}</span>
+                    <span class="domain-name">${s.nombre}</span>
+                </div>
                 <span class="status-badge ${nivel}">${s.estado}</span>
             </div>
             <div class="card-stats">
                 <div class="stat">
-                    <div class="value ${nivel}">${s.promedio} ms</div>
+                    <div class="value ${nivel}">${s.promedio} <span style="font-size:12px;font-weight:400">ms</span></div>
                     <span class="label">Promedio</span>
                 </div>
                 <div class="stat">
-                    <div class="value">${s.maximo} ms</div>
+                    <div class="value">${s.maximo} <span style="font-size:12px;font-weight:400">ms</span></div>
                     <span class="label">Máximo</span>
                 </div>
                 <div class="stat">
-                    <div class="value ${perdida > 0 ? 'red' : 'green'}">${perdida}%</div>
+                    <div class="value ${perdida > 0 ? 'red' : 'green'}">${perdida}<span style="font-size:12px;font-weight:400">%</span></div>
                     <span class="label">Pérdida</span>
                 </div>
+                <div class="stat">
+                    ${crearAnilloDisponibilidad(disp, nivel)}
+                    <span class="label">Disponibilidad</span>
+                </div>
+            </div>
+            <div class="card-chart">
+                <canvas id="${chartId}"></canvas>
             </div>
             <div class="card-footer">
                 <span>🖥 ${s.ip}</span>
                 <span>📡 TTL: ${ttl}</span>
+                <span>📊 ${dataHistorico.length} mediciones</span>
             </div>
         `;
         container.appendChild(card);
-    });
-}
 
-function crearGraficas(sitios, historico) {
-    const container = document.getElementById('graficas');
-    container.innerHTML = '';
+        if (dataHistorico.length > 0) {
+            setTimeout(() => {
+                const canvas = document.getElementById(chartId);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                if (charts[chartId]) charts[chartId].destroy();
 
-    sitios.forEach(s => {
-        const datos = historico.filter(h => h.sitio === s.nombre);
-        if (datos.length === 0) return;
+                const promedios = dataHistorico.map(d => d.promedio);
+                const maxProm = Math.max(...promedios, 1);
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'chart-wrapper';
-
-        const titulo = document.createElement('h3');
-        titulo.textContent = 'Latencia - ' + s.nombre;
-        wrapper.appendChild(titulo);
-
-        const canvas = document.createElement('canvas');
-        canvas.id = 'chart-' + s.nombre.replace(/[^a-zA-Z0-9]/g, '_');
-        wrapper.appendChild(canvas);
-        container.appendChild(wrapper);
-
-        const ctx = canvas.getContext('2d');
-        if (charts[s.nombre]) charts[s.nombre].destroy();
-
-        charts[s.nombre] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: datos.map(d => d.fecha),
-                datasets: [{
-                    label: 'Promedio (ms)',
-                    data: datos.map(d => d.promedio),
-                    borderColor: '#58a6ff',
-                    backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 2,
-                    pointHoverRadius: 5,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: {
-                        ticks: { color: '#8b949e', maxTicksLimit: 10 },
-                        grid: { color: 'rgba(48, 54, 61, 0.5)' }
+                charts[chartId] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dataHistorico.map(d => d.fecha),
+                        datasets: [{
+                            data: promedios,
+                            borderColor: getColor(nivel),
+                            backgroundColor: getColor(nivel) + '18',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 1.5,
+                            pointHoverRadius: 4,
+                            pointBackgroundColor: getColor(nivel),
+                            borderWidth: 2
+                        }]
                     },
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: '#8b949e' },
-                        grid: { color: 'rgba(48, 54, 61, 0.5)' }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                        scales: {
+                            x: {
+                                ticks: { color: '#8b949e', maxTicksLimit: 8, font: { size: 9 } },
+                                grid: { display: false }
+                            },
+                            y: {
+                                min: 0,
+                                max: Math.max(maxProm * 1.3, 10),
+                                ticks: { color: '#8b949e', font: { size: 9 }, callback: v => v + 'ms' },
+                                grid: { color: 'rgba(48,54,61,0.3)' }
+                            }
+                        },
+                        interaction: { intersect: false, mode: 'index' }
                     }
-                }
-            }
-        });
+                });
+            }, 50);
+        }
     });
 }
 
 async function cargarDatos() {
+    document.getElementById('loading').classList.remove('hidden');
     try {
         const [datosRes, historicoRes] = await Promise.all([
             fetch('datos.json?' + Date.now()),
             fetch('historico.json?' + Date.now())
         ]);
-
         const datos = await datosRes.json();
         const historico = await historicoRes.json();
+        const disponibilidad = calcularDisponibilidad(historico);
 
-        crearTarjetas(datos.sitios);
         actualizarSaludGeneral(datos.sitios);
-        crearGraficas(datos.sitios, historico);
+        renderizarResumen(datos.sitios, disponibilidad);
+        crearTarjetas(datos.sitios, historico, disponibilidad);
 
         document.getElementById('ultima-actualizacion').textContent =
             new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     } catch (err) {
         document.getElementById('cards').innerHTML =
-            '<div class="card border-red"><p style="color:var(--red)">Error al cargar datos: ' + err.message + '</p></div>';
+            '<div class="card border-red" style="padding:30px;text-align:center;color:var(--red)">Error al cargar datos: ' + err.message + '</div>';
+    } finally {
+        document.getElementById('loading').classList.add('hidden');
     }
 }
 
