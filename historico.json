@@ -2560,5 +2560,19 @@
         "promedio": 4,
         "maximo": 7,
         "estado": "OK"
+    },
+    {
+        "fecha": "23/06 09:35",
+        "sitio": "webpad-neb-homil.mitrol.cloud",
+        "promedio": 4,
+        "maximo": 6,
+        "estado": "OK"
+    },
+    {
+        "fecha": "23/06 09:36",
+        "sitio": "dghweb.homil.gov.co",
+        "promedio": 26,
+        "maximo": 35,
+        "estado": "OK"
     }
 ]
