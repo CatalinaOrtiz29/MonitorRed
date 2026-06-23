@@ -377,8 +377,8 @@ async function cargarDatos() {
 
     try {
         const [datosRes, historicoRes] = await Promise.all([
-            fetch('datos.json?' + Date.now()),
-            fetch('historico.json?' + Date.now())
+            fetch('https://raw.githubusercontent.com/CatalinaOrtiz29/MonitorRed/main/datos.json?' + Date.now()),
+            fetch('https://raw.githubusercontent.com/CatalinaOrtiz29/MonitorRed/main/historico.json?' + Date.now())
         ]);
         const datos = await datosRes.json();
         const historico = await historicoRes.json();
