@@ -384,8 +384,12 @@ async function cargarDatos() {
 
     try {
         const [datosRes, historicoRes] = await Promise.all([
-            fetch('https://raw.githubusercontent.com/CatalinaOrtiz29/MonitorRed/main/datos.json?' + Date.now()),
-            fetch('https://raw.githubusercontent.com/CatalinaOrtiz29/MonitorRed/main/historico.json?' + Date.now())
+            fetch('https://api.github.com/repos/CatalinaOrtiz29/MonitorRed/contents/datos.json', {
+                headers: { 'Accept': 'application/vnd.github.v3.raw' }
+            }),
+            fetch('https://api.github.com/repos/CatalinaOrtiz29/MonitorRed/contents/historico.json', {
+                headers: { 'Accept': 'application/vnd.github.v3.raw' }
+            })
         ]);
         const datos = await datosRes.json();
         const historico = await historicoRes.json();
@@ -425,4 +429,4 @@ async function cargarDatos() {
 }
 
 cargarDatos();
-setInterval(cargarDatos, 120000);
+setInterval(cargarDatos, 180000);
