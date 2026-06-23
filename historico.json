@@ -5803,5 +5803,32 @@
         "minimo": 2,
         "perdida": 0,
         "estado": "OK"
+    },
+    {
+        "fecha": "23/06 12:26",
+        "sitio": "webpad-neb-homil.mitrol.cloud",
+        "promedio": 23,
+        "maximo": 35,
+        "minimo": 3,
+        "perdida": 10,
+        "estado": "OK"
+    },
+    {
+        "fecha": "23/06 12:27",
+        "sitio": "dghweb.homil.gov.co",
+        "promedio": 28,
+        "maximo": 36,
+        "minimo": 16,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "23/06 12:27",
+        "sitio": "10.200.192.1",
+        "promedio": 2,
+        "maximo": 11,
+        "minimo": 1,
+        "perdida": 0,
+        "estado": "OK"
     }
 ]
