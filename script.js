@@ -409,4 +409,4 @@ async function cargarDatos() {
 }
 
 cargarDatos();
-setInterval(cargarDatos, 60000);
+setInterval(cargarDatos, 120000);
