@@ -1,32 +1,5 @@
 [
     {
-        "fecha": "28/06 14:56",
-        "sitio": "webpad-neb-homil.mitrol.cloud",
-        "promedio": 4,
-        "maximo": 6,
-        "minimo": 3,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "28/06 14:56",
-        "sitio": "dghweb.homil.gov.co",
-        "promedio": 4,
-        "maximo": 6,
-        "minimo": 3,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "28/06 14:57",
-        "sitio": "10.200.192.1",
-        "promedio": 1,
-        "maximo": 3,
-        "minimo": 1,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
         "fecha": "28/06 14:58",
         "sitio": "webpad-neb-homil.mitrol.cloud",
         "promedio": 3,
@@ -19432,6 +19405,33 @@
     },
     {
         "fecha": "29/06 14:55",
+        "sitio": "10.200.192.1",
+        "promedio": 1,
+        "maximo": 3,
+        "minimo": 1,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "29/06 14:56",
+        "sitio": "webpad-neb-homil.mitrol.cloud",
+        "promedio": 4,
+        "maximo": 6,
+        "minimo": 3,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "29/06 14:56",
+        "sitio": "dghweb.homil.gov.co",
+        "promedio": 4,
+        "maximo": 5,
+        "minimo": 3,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "29/06 14:57",
         "sitio": "10.200.192.1",
         "promedio": 1,
         "maximo": 3,
