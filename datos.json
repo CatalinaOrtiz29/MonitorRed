@@ -15,7 +15,7 @@
             "estado": "OK",
             "promedio": 4,
             "maximo": 6,
-            "minimo": 4,
+            "minimo": 3,
             "ip": "172.20.20.60",
             "ttl": 61,
             "perdida": 0
