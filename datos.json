@@ -3,9 +3,9 @@
         {
             "nombre": "10.200.192.1",
             "estado": "OK",
-            "promedio": 1,
-            "maximo": 4,
-            "minimo": 0,
+            "promedio": 2,
+            "maximo": 5,
+            "minimo": 2,
             "ip": "",
             "ttl": 128,
             "perdida": 0
