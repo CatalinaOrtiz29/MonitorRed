@@ -4,11 +4,11 @@
             "nombre": "10.200.192.1",
             "estado": "OK",
             "promedio": 1,
-            "maximo": 2,
+            "maximo": 3,
             "minimo": 1,
             "ip": "",
             "ttl": 128,
-            "perdida": 0
+            "perdida": 5
         },
         {
             "nombre": "dghweb.homil.gov.co",
