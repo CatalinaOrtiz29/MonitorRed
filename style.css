@@ -294,7 +294,7 @@ header h1 {
 }
 
 .card-chart canvas {
-    max-height: 300px;
+    max-height: 200px;
     width: 100% !important;
 }
 
@@ -365,7 +365,7 @@ header h1 {
 }
 
 .weekly-card canvas {
-    max-height: 200px;
+    max-height: 160px;
     width: 100% !important;
 }
 
