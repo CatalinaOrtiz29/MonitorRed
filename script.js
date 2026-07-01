@@ -398,7 +398,7 @@ async function cargarDatos() {
         actualizarSaludGeneral(datos.sitios);
         const ahora = new Date();
         const ultimaFechaStr = historico.length > 0
-            ? historico.map(h => h.fecha).sort().pop()
+            ? historico.map(h => h.fecha).sort((a, b) => parseFechaEvento(a) - parseFechaEvento(b)).pop()
             : null;
         let demoraMin = null;
         if (ultimaFechaStr) {
