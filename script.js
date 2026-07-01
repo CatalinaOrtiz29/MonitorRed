@@ -132,6 +132,34 @@ function crearAnilloDisponibilidad(porcentaje, nivel) {
     </div>`;
 }
 
+function agruparPorBloque(data, minutos = 10) {
+    const bloques = {};
+    data.forEach(d => {
+        const fecha = parseFechaEvento(d.fecha);
+        const bloque = Math.floor(fecha.getMinutes() / minutos) * minutos;
+        const key = `${String(fecha.getHours()).padStart(2,'0')}:${String(bloque).padStart(2,'0')}`;
+        const label = `${String(fecha.getDate()).padStart(2,'0')}/${String(fecha.getMonth()+1).padStart(2,'0')} ${key}`;
+        if (!bloques[label]) {
+            bloques[label] = { suma: 0, count: 0, max: -Infinity, min: Infinity, perdida: 0, estado: d.estado };
+        }
+        bloques[label].suma += d.promedio;
+        bloques[label].count++;
+        bloques[label].max = Math.max(bloques[label].max, d.maximo);
+        bloques[label].min = Math.min(bloques[label].min, d.minimo ?? d.promedio);
+        if (d.perdida && d.perdida > (bloques[label].perdida || 0)) bloques[label].perdida = d.perdida;
+    });
+    return Object.entries(bloques)
+        .sort(([a], [b]) => parseFechaEvento(a) - parseFechaEvento(b))
+        .map(([label, vals]) => ({
+            fecha: label,
+            promedio: Math.round(vals.suma / vals.count),
+            maximo: vals.max,
+            minimo: vals.min === Infinity ? Math.round(vals.suma / vals.count) : vals.min,
+            perdida: vals.perdida,
+            estado: vals.estado
+        }));
+}
+
 function crearTarjetas(sitios, historico, disponibilidad) {
     const container = $('cards');
     if (!container) return;
@@ -145,6 +173,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
         const disp = disponibilidad[s.nombre] ?? 100;
         const chartId = 'chart-' + idx;
         const dataHistorico = historico.filter(h => h.sitio === s.nombre);
+        const dataAgrupada = agruparPorBloque(dataHistorico, 10);
 
         const card = document.createElement('div');
         card.className = 'card border-' + nivel;
@@ -194,16 +223,16 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                 const ctx = canvas.getContext('2d');
                 if (charts[chartId]) charts[chartId].destroy();
 
-                const promedios = dataHistorico.map(d => d.promedio);
-                const maximos = dataHistorico.map(d => d.maximo);
-                const minimos = dataHistorico.map(d => d.minimo ?? d.promedio);
+                const promedios = dataAgrupada.map(d => d.promedio);
+                const maximos = dataAgrupada.map(d => d.maximo);
+                const minimos = dataAgrupada.map(d => d.minimo ?? d.promedio);
                 const todosValores = [...promedios, ...maximos, ...minimos];
                 const maxEscala = Math.ceil(Math.max(...todosValores, 1));
 
                 charts[chartId] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: dataHistorico.map(d => d.fecha),
+                        labels: dataAgrupada.map(d => d.fecha),
                         datasets: [
                             {
                                 data: maximos,
@@ -231,11 +260,11 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                                 borderColor: getColor(nivel),
                                 backgroundColor: getColor(nivel) + '18',
                                 fill: false,
-                                tension: 0.3,
-                                pointRadius: 1.5,
+                                tension: 0.2,
+                                pointRadius: 2,
                                 pointHoverRadius: 5,
                                 pointBackgroundColor: getColor(nivel),
-                                borderWidth: 2
+                                borderWidth: 3
                             }
                         ]
                     },
@@ -251,7 +280,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                                 callbacks: {
                                     label: function(context) {
                                         const idx = context.dataIndex;
-                                        const d = dataHistorico[idx];
+                                        const d = dataAgrupada[idx];
                                         if (!d) return '';
                                         if (d.estado === 'CAIDO') return 'CAÍDO';
                                         const partes = [
@@ -269,7 +298,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                         },
                         scales: {
                             x: {
-                                ticks: { color: '#8b949e', maxTicksLimit: 8, font: { size: 9 } },
+                                ticks: { color: '#8b949e', maxTicksLimit: 12, font: { size: 9 } },
                                 grid: { display: false }
                             },
                             y: {
