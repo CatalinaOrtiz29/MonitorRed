@@ -189,7 +189,7 @@ function crearTarjetas(sitios, historico, disponibilidad) {
                     <span class="friendly-name">${friendly}</span>
                     <span class="domain-name">${s.nombre}</span>
                 </div>
-                <span class="status-badge ${nivel}">${s.estado}</span>
+                <span class="status-badge ${nivel}">${nivel === 'red' && s.estado === 'OK' ? 'CRÍTICO' : s.estado}</span>
             </div>
             <div class="card-stats">
                 <div class="stat">
