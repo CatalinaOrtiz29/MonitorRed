@@ -314,6 +314,61 @@ header h1 {
     gap: 4px;
 }
 
+/* WEEKLY SECTION */
+.weekly-section {
+    padding: 0 30px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.weekly-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.weekly-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.weekly-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+    gap: 20px;
+}
+
+.weekly-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+}
+
+.weekly-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.weekly-card-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.weekly-card canvas {
+    max-height: 200px;
+    width: 100% !important;
+}
+
 /* EVENTS SECTION */
 .events-section {
     padding: 0 30px 30px;

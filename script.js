@@ -173,7 +173,12 @@ function crearTarjetas(sitios, historico, disponibilidad) {
         const disp = disponibilidad[s.nombre] ?? 100;
         const chartId = 'chart-' + idx;
         const dataHistorico = historico.filter(h => h.sitio === s.nombre);
-        const dataAgrupada = agruparPorBloque(dataHistorico, 10);
+        const hoy = new Date();
+        const dataHoy = dataHistorico.filter(d => {
+            const f = parseFechaEvento(d.fecha);
+            return f.getDate() === hoy.getDate() && f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
+        });
+        const dataAgrupada = agruparPorBloque(dataHoy, 10);
 
         const card = document.createElement('div');
         card.className = 'card border-' + nivel;
