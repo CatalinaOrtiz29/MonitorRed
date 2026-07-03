@@ -3,7 +3,7 @@
         {
             "nombre": "10.200.192.1",
             "estado": "OK",
-            "promedio": 1,
+            "promedio": 2,
             "maximo": 3,
             "minimo": 1,
             "ip": "",
