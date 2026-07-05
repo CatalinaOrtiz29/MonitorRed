@@ -5,7 +5,7 @@
             "estado": "OK",
             "promedio": 1,
             "maximo": 2,
-            "minimo": 1,
+            "minimo": 0,
             "ip": "",
             "ttl": 128,
             "perdida": 0
