@@ -1,59 +1,5 @@
 [
     {
-        "fecha": "26/06 16:10",
-        "sitio": "webpad-neb-homil.mitrol.cloud",
-        "promedio": 5,
-        "maximo": 11,
-        "minimo": 3,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "26/06 16:10",
-        "sitio": "dghweb.homil.gov.co",
-        "promedio": 6,
-        "maximo": 15,
-        "minimo": 4,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "26/06 16:11",
-        "sitio": "10.200.192.1",
-        "promedio": 1,
-        "maximo": 3,
-        "minimo": 1,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "26/06 16:12",
-        "sitio": "webpad-neb-homil.mitrol.cloud",
-        "promedio": 5,
-        "maximo": 15,
-        "minimo": 3,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "26/06 16:12",
-        "sitio": "dghweb.homil.gov.co",
-        "promedio": 6,
-        "maximo": 18,
-        "minimo": 5,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
-        "fecha": "26/06 16:13",
-        "sitio": "10.200.192.1",
-        "promedio": 1,
-        "maximo": 3,
-        "minimo": 1,
-        "perdida": 0,
-        "estado": "OK"
-    },
-    {
         "fecha": "26/06 16:14",
         "sitio": "webpad-neb-homil.mitrol.cloud",
         "promedio": 6,
@@ -188832,6 +188778,33 @@
         "fecha": "06/07 16:10",
         "sitio": "10.200.192.1",
         "promedio": 2,
+        "maximo": 3,
+        "minimo": 1,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "06/07 16:12",
+        "sitio": "webpad-neb-homil.mitrol.cloud",
+        "promedio": 7,
+        "maximo": 27,
+        "minimo": 5,
+        "perdida": 0,
+        "estado": "OK"
+    },
+    {
+        "fecha": "06/07 16:14",
+        "sitio": "dghweb.homil.gov.co",
+        "promedio": 0,
+        "maximo": 0,
+        "minimo": 0,
+        "perdida": 100,
+        "estado": "CAIDO"
+    },
+    {
+        "fecha": "06/07 16:14",
+        "sitio": "10.200.192.1",
+        "promedio": 1,
         "maximo": 3,
         "minimo": 1,
         "perdida": 0,
