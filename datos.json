@@ -15,7 +15,7 @@
             "estado": "OK",
             "promedio": 6,
             "maximo": 12,
-            "minimo": 4,
+            "minimo": 5,
             "ip": "172.20.20.60",
             "ttl": 61,
             "perdida": 0
@@ -23,7 +23,7 @@
         {
             "nombre": "webpad-neb-homil.mitrol.cloud",
             "estado": "OK",
-            "promedio": 9,
+            "promedio": 7,
             "maximo": 34,
             "minimo": 4,
             "ip": "10.230.10.132",
