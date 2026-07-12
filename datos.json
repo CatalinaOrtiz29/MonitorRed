@@ -5,7 +5,7 @@
             "estado": "OK",
             "promedio": 2,
             "maximo": 3,
-            "minimo": 1,
+            "minimo": 2,
             "ip": "",
             "ttl": 128,
             "perdida": 0
@@ -15,7 +15,7 @@
             "estado": "OK",
             "promedio": 5,
             "maximo": 7,
-            "minimo": 4,
+            "minimo": 3,
             "ip": "172.20.20.60",
             "ttl": 61,
             "perdida": 0
