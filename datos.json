@@ -13,7 +13,7 @@
         {
             "nombre": "dghweb.homil.gov.co",
             "estado": "OK",
-            "promedio": 10,
+            "promedio": 9,
             "maximo": 32,
             "minimo": 4,
             "ip": "172.20.20.60",
@@ -24,8 +24,8 @@
             "nombre": "webpad-neb-homil.mitrol.cloud",
             "estado": "OK",
             "promedio": 9,
-            "maximo": 29,
-            "minimo": 4,
+            "maximo": 23,
+            "minimo": 5,
             "ip": "10.230.10.132",
             "ttl": 62,
             "perdida": 0
