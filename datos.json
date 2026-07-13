@@ -3,8 +3,8 @@
         {
             "nombre": "10.200.192.1",
             "estado": "OK",
-            "promedio": 2,
-            "maximo": 4,
+            "promedio": 1,
+            "maximo": 3,
             "minimo": 1,
             "ip": "",
             "ttl": 128,
@@ -23,7 +23,7 @@
         {
             "nombre": "webpad-neb-homil.mitrol.cloud",
             "estado": "OK",
-            "promedio": 5,
+            "promedio": 4,
             "maximo": 6,
             "minimo": 3,
             "ip": "10.230.10.132",
