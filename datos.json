@@ -23,8 +23,8 @@
         {
             "nombre": "webpad-neb-homil.mitrol.cloud",
             "estado": "OK",
-            "promedio": 6,
-            "maximo": 15,
+            "promedio": 5,
+            "maximo": 6,
             "minimo": 5,
             "ip": "10.230.10.132",
             "ttl": 62,
