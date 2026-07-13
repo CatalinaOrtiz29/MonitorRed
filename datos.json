@@ -23,7 +23,7 @@
         {
             "nombre": "webpad-neb-homil.mitrol.cloud",
             "estado": "OK",
-            "promedio": 4,
+            "promedio": 5,
             "maximo": 6,
             "minimo": 3,
             "ip": "10.230.10.132",
