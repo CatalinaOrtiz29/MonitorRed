@@ -4,7 +4,7 @@
             "nombre": "10.200.192.1",
             "estado": "OK",
             "promedio": 2,
-            "maximo": 3,
+            "maximo": 7,
             "minimo": 1,
             "ip": "",
             "ttl": 128,
